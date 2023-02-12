@@ -112,8 +112,8 @@ class Entity {
             this.substep();
         }
 
-        let velx = (this.x - this.lx) * 0.99;
-        let vely = (this.y - this.ly) * 0.99;
+        let velx = (this.x - this.lx) * 0.97;
+        let vely = (this.y - this.ly) * 0.97;
 
         this.fill[0] = dist(this.x, this.y, this.lx, this.ly) * 32
 
@@ -169,10 +169,10 @@ function mouseReleased() {
 }
 
 function keyPressed() { 
-    if (entities.length > 2 && !keyIsDown(SHIFT)) {
+    if (entities.length > 1 && !keyIsDown(SHIFT)) {
         try {
             rentry = Math.round(Math.random() * entities.length) - 2
-            entities[rentry].link(entities[rentry + 1])
+            entities[rentry].link(selected)
         } catch {
             0;
         }
@@ -208,6 +208,7 @@ function setup() {
     createCanvas(512, 512);
     entities = [];
     entities.push(selected)
+    frameRate(60)
 }
 
 function draw() {
