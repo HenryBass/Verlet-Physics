@@ -1,4 +1,4 @@
-width = 512
+width = 1024
 height = 512
 
 dt = 0.001
@@ -39,7 +39,7 @@ class Entity {
     }
 
     substep() {
-        if (this.x + this.radius > height) {
+        if (this.x + this.radius > width) {
             this.x -= (this.x + this.radius - width)
         }
         if (this.y + this.radius > height) {
@@ -73,12 +73,12 @@ class Entity {
                     }
 
                 }
-                if (overlap * this.radius < -500 && false) {
-                    entities.splice(entities.indexOf(this), 1)
-                    entities.push(new Entity(this.x + this.radius/2, this.y + this.radius/2, this.radius / 2))
-                    entities.push(new Entity(this.x - this.radius/2, this.y - this.radius/2, this.radius / 2))
-                    return 0
-                }
+                //if (overlap * this.radius < -500 && false) {
+                    //entities.splice(entities.indexOf(this), 1)
+                    //entities.push(new Entity(this.x + this.radius/2, this.y + this.radius/2, this.radius / 2))
+                    //entities.push(new Entity(this.x - this.radius/2, this.y - this.radius/2, this.radius / 2))
+                    //return 0
+                //}
             }
         }
     }
@@ -112,10 +112,10 @@ class Entity {
             this.substep();
         }
 
-        let velx = (this.x - this.lx) * 0.97;
-        let vely = (this.y - this.ly) * 0.97;
+        let velx = (this.x - this.lx) * 0.99;
+        let vely = (this.y - this.ly) * 0.99;
 
-        this.fill[0] = dist(this.x, this.y, this.lx, this.ly) * 32
+        this.fill[0] = dist(this.x, this.y, this.lx, this.ly) * 64
 
         this.lx = this.x;
         this.ly = this.y;
@@ -169,12 +169,25 @@ function mouseReleased() {
 }
 
 function keyPressed() { 
-    if (entities.length > 1 && !keyIsDown(SHIFT)) {
+    if (entities.length > 1 && keyIsDown(76)) {
         try {
-            rentry = Math.round(Math.random() * entities.length) - 2
-            entities[rentry].link(selected)
+            oentry = findatloc(mouseX, mouseY)
+            if (oentry !== "Fail") {
+                oentry.link(selected)
+                selected = oentry
+            }
         } catch {
             0;
+        }
+    } else if (entities.length > 1 && keyIsDown(8)) {
+        oentry = findatloc(mouseX, mouseY)
+        if (oentry !== "Fail") {
+            entities.splice(entities.indexOf(oentry), 1)
+            for (let i = 0; i < entities.length; i++) {
+                if (entities[i].links.indexOf(oentry) != -1) {
+                    entities[i].links.splice(oentry, 1)
+                }
+            }
         }
     }
 }
@@ -192,20 +205,30 @@ function render() {
 
         let e = entities[i]
         fill(e.fill[0], e.fill[1], e.fill[2]);
-        noStroke()
+        if (e == selected) {
+            stroke(255, 0, 0)
+        } else if (e == findatloc(mouseX, mouseY)) {
+            stroke(0, 255, 0)
+        } else {
+            noStroke()
+        }
         circle(e.x, e.y, e.radius * 2);
+
         if (e.links.length > 0) {
             stroke(255)
             for(let i = 0; i < e.links.length; i++) {
+                strokeWeight((1/dist(e.x, e.y, e.links[i].x, e.links[i].y)) * 30);
                 line(e.x, e.y, e.links[i].x, e.links[i].y)
+                strokeWeight(1);
             }
         }
         entities[i].update()
     }
+    noStroke()
 }
 
 function setup() {
-    createCanvas(512, 512);
+    createCanvas(800, 512);
     entities = [];
     entities.push(selected)
     frameRate(60)
