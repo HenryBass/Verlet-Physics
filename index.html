@@ -12,9 +12,16 @@
     </head>
     <body>
         <p>Verlet Integration</p>
-
-        <script language="javascript" type="text/javascript" src="p5.js"></script>
-
+        <canvas id="canvas" width="1024" height="512"></canvas>
+        <!--Slider to control variables-->
+        <div id="slider">
+            <p>Gravity</p>
+            <input type="range" min="0" max="1" step="0.01" value="0.01" id="gravity">
+            <p>Max Stress</p>
+            <input type="range" min="0" max="300" step="0.01" value="0.01" id="maxStress">
+            <p>Link Strength</p>
+            <input type="range" min="0" max="5" step="0.01" value="1" id="linkStrength">
+        </div>
         <script src="script.js"></script>
     </body>
 </html>
