@@ -95,7 +95,8 @@ class FixedRect {
             } else {
                 this.beingDragged = false
             }
-        }
+    }
+
     }
 
     render() {
@@ -355,7 +356,7 @@ canvas.addEventListener("mousedown", function(e) {
             loc.ly = loc.y
             loc.fixed = !loc.fixed
         }
-    } else if (key == "Control") {
+    } else if (key == "Alt" || key == "Option") {
         let canPlace = true
         for (let i = 0; i < barriers.length; i++) {
             let overlap = barriers[i].overlaps(mouseX, mouseY, 0)
@@ -421,13 +422,17 @@ function render() {
         dragging = false
     }
 
+    if (entities.length > 50) {
+        error()
+        entities.splice(0, 1)
+    }
+
     if (mousedown && dragging) {
         selected.x = mouseX
         selected.y = mouseY
     }
-
+    
     for (let i = 0; i < entities.length; i++) {
-
         let e = entities[i]
         ctx.fillStyle = "rgb(" + e.fill[0] + "," + e.fill[1] + "," + e.fill[2] + ")";
         if (e == selected) {
@@ -461,6 +466,12 @@ function render() {
     for (let i = 0; i < barriers.length; i++) {
         barriers[i].update()
         barriers[i].render()
+        let relX = mouseX - barriers[i].x
+        let relY = mouseY - barriers[i].y
+        if (barriers[i].draggable && relX > 385 && relY > 100 && relX < 433 && relY < 134 && mousedown) {
+            barriers.splice(i, 1)
+            i -= 1
+        }
     }
     for (let i = 0; i < horses.length; i++) {
         horses[i].update()
@@ -477,8 +488,8 @@ function frameRate() {
 
 function setup() {
     entities.push(selected)
-    barriers.push(new FixedRect(0, height-300, 300, 300))
-    barriers.push(new FixedRect(width-300, height-300, 300, 300))
+    barriers.push(new FixedRect(0, height-300, 30, 300))
+    barriers.push(new FixedRect(width-30, height-300, 300, 300))
     horses.push(new Horse(50 + Math.random() * 5, height/2 - 50 + Math.random() * 5))
 }
 
@@ -492,7 +503,8 @@ function draw() {
     render();
     ctx.font = "30px Monospace";
     ctx.fillStyle = "white";
-    ctx.fillText(Math.round(frameRate()), 10, 30);
+    ctx.fillStyle = entities.length < 50 ? "white" : "red";
+    ctx.fillText(100 * entities.length/50 + "% of max nodes", 10, 30);
 
     window.requestAnimationFrame(draw);
 }
